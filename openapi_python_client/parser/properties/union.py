@@ -38,6 +38,8 @@ class UnionProperty(PropertyProtocol):
         schemas: Schemas,
         parent_name: str,
         config: Config,
+        process_properties: bool,
+        roots: set[ReferencePath | utils.ClassName],
     ) -> tuple[UnionProperty | PropertyError, Schemas]:
         """
         Create a `UnionProperty` the right way.
@@ -93,6 +95,8 @@ class UnionProperty(PropertyProtocol):
                 schemas=schemas,
                 parent_name=parent_name,
                 config=config,
+                process_properties=process_properties,
+                roots=roots,
             )
             if isinstance(sub_prop, PropertyError):
                 return (

@@ -149,7 +149,7 @@ def property_from_data(  # noqa: PLR0911, PLR0912
     roots: set[ReferencePath | utils.ClassName] | None = None,
 ) -> tuple[Property | PropertyError, Schemas]:
     """Generate a Property from the OpenAPI dictionary representation of it"""
-    roots = roots or set()
+    if roots is None: roots = set()
     name = utils.remove_string_escapes(name)
     if isinstance(data, oai.Reference):
         return _property_from_ref(
@@ -213,6 +213,8 @@ def property_from_data(  # noqa: PLR0911, PLR0912
             schemas=schemas,
             parent_name=parent_name,
             config=config,
+            process_properties=process_properties,
+            roots=roots,
         )
     if data.anyOf or data.oneOf or isinstance(data.type, list):
         return UnionProperty.build(
@@ -222,6 +224,8 @@ def property_from_data(  # noqa: PLR0911, PLR0912
             schemas=schemas,
             parent_name=parent_name,
             config=config,
+            process_properties=process_properties,
+            roots=roots,
         )
     if data.const is not None:
         return (

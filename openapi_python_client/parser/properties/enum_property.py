@@ -52,6 +52,8 @@ class EnumProperty(PropertyProtocol):
         schemas: Schemas,
         parent_name: str,
         config: Config,
+        process_properties: bool,
+        roots: set[ReferencePath | utils.ClassName],
     ) -> tuple[EnumProperty | NoneProperty | UnionProperty | PropertyError, Schemas]:
         """
         Create an EnumProperty from schema data.
@@ -113,6 +115,8 @@ class EnumProperty(PropertyProtocol):
                 schemas=schemas,
                 parent_name=parent_name,
                 config=config,
+                process_properties=process_properties,
+                roots=roots,
             )
 
         class_name = data.title or name
