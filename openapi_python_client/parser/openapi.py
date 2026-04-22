@@ -149,6 +149,7 @@ class Endpoint:
     responses: Responses = field(default_factory=lambda: Responses(patterns=[], default=None))
     bodies: list[Body] = field(default_factory=list)
     errors: list[ParseError] = field(default_factory=list)
+    as_json: set[str] = field(default_factory=set)
 
     @staticmethod
     def _add_responses(
@@ -249,8 +250,13 @@ class Endpoint:
                 return param_or_error, schemas, parameters
             param = param_or_error  # noqa: PLW2901
 
+            as_json = False
             if param.param_schema is None:
-                continue
+                if param.content:
+                    if (content_json := param.content.get('application/json')) is not None and content_json.media_type_schema is not None:
+                        param.param_schema = content_json.media_type_schema
+                        as_json = True
+                else: continue
 
             unique_param = (param.name, param.param_in)
             if unique_param in unique_parameters:
@@ -283,6 +289,8 @@ class Endpoint:
                 parent_name=endpoint.name,
                 config=config,
             )
+            if as_json:
+                endpoint.as_json.add(prop.name)
 
             if isinstance(prop, ParseError):
                 return (

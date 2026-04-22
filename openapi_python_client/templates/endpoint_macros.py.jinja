@@ -47,7 +47,7 @@ params: dict[str, Any] = {}
 {{ prop_template.transform(property, property.python_name, destination) }}
     {% endif %}
     {%- if not property.json_is_dict %}
-params["{{ property.name }}"] = {{ destination }}
+if {{ destination }} is not UNSET: params["{{ property.name }}"] = {% if property.name in endpoint.as_json %}json.dumps({{ destination }}, ensure_ascii=True){% else %}{{ destination }}{% endif %}
     {% else %}
 {{ guarded_statement(property, destination, "params.update(" + destination + ")") }}
     {% endif %}
