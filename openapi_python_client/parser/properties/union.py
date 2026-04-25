@@ -25,6 +25,7 @@ class UnionProperty(PropertyProtocol):
     python_name: PythonIdentifier
     description: str | None
     example: str | None
+    data: oai.Schema
     inner_properties: list[PropertyProtocol]
     template: ClassVar[str] = "union_property.py.jinja"
 
@@ -128,6 +129,7 @@ class UnionProperty(PropertyProtocol):
             python_name=PythonIdentifier(value=name, prefix=config.field_prefix),
             description=data.description,
             example=data.example,
+            data=data,
         )
         default_or_error = prop.convert_value(data.default)
         if isinstance(default_or_error, PropertyError):
