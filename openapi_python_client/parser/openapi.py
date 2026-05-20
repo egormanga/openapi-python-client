@@ -25,7 +25,7 @@ from .properties import (
     property_from_data,
 )
 from .properties.schemas import parameter_from_reference
-from .responses import HTTPStatusPattern, Responses, response_from_data
+from .responses import HTTPStatusPattern, JSON_SOURCE, Responses, response_from_data, source_by_content_type
 
 _PATH_PARAM_REGEX = re.compile("{([a-zA-Z_-][a-zA-Z0-9_-]*)}")
 
@@ -253,10 +253,20 @@ class Endpoint:
             as_json = False
             if param.param_schema is None:
                 if param.content:
-                    if (content_json := param.content.get('application/json')) is not None and content_json.media_type_schema is not None:
-                        param.param_schema = content_json.media_type_schema
-                        as_json = True
-                else: continue
+                    content_schemas = []
+                    for content_type in param.content.keys():
+                        if ((content := param.content.get(content_type)) is not None
+                            and content.media_type_schema is not None
+                            and source_by_content_type(content_type, config) is JSON_SOURCE
+                        ):
+                            content_schemas.append(content.media_type_schema)
+                            as_json = True
+                    if len(content_schemas) == 1:
+                        param.param_schema = content_schemas[0]
+                    elif len(content_schemas) > 1:
+                        param.param_schema = oai.Schema(oneOf=content_schemas)
+                else:
+                    continue
 
             unique_param = (param.name, param.param_in)
             if unique_param in unique_parameters:
