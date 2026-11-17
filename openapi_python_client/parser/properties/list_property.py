@@ -23,6 +23,8 @@ class ListProperty(PropertyProtocol):
     example: str | None
     data: oai.Schema
     inner_property: PropertyProtocol
+    explode: bool | None = None
+    as_json: bool = False
     template: ClassVar[str] = "list_property.py.jinja"
 
     @classmethod
@@ -37,6 +39,8 @@ class ListProperty(PropertyProtocol):
         config: Config,
         process_properties: bool,
         roots: set[ReferencePath | utils.ClassName],
+        explode: bool | None = None,
+        as_json: bool = False,
     ) -> tuple[ListProperty | PropertyError, Schemas]:
         """
         Build a ListProperty the right way, use this instead of the normal constructor.
@@ -52,6 +56,8 @@ class ListProperty(PropertyProtocol):
                 property data
             roots: The set of `ReferencePath`s and `ClassName`s to remove from the schemas if a child reference becomes
                 invalid
+            explode: Whether to use `explode` for array properties.
+            as_json: Determines if object is inside json.
 
         Returns:
             `(result, schemas)` where `schemas` is an updated version of the input named the same including any inner
@@ -100,6 +106,8 @@ class ListProperty(PropertyProtocol):
                 description=data.description,
                 example=data.example,
                 data=data,
+                explode=explode,
+                as_json=as_json,
             ),
             schemas,
         )

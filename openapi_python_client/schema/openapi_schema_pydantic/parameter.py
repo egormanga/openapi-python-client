@@ -28,7 +28,7 @@ class Parameter(BaseModel):
     deprecated: bool = False
     allowEmptyValue: bool = False
     style: str | None = None
-    explode: bool = False
+    explode: bool | None = None
     allowReserved: bool = False
     param_schema: ReferenceOr[Schema] | None = Field(default=None, alias="schema")
     example: Any | None = None

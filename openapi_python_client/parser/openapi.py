@@ -298,6 +298,8 @@ class Endpoint:
                 schemas=schemas,
                 parent_name=endpoint.name,
                 config=config,
+                explode=param.explode,
+                as_json=as_json,
             )
             if as_json:
                 endpoint.as_json.add(prop.name)
